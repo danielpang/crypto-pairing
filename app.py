@@ -10,15 +10,17 @@ import quandl
 app = dash.Dash()
 app.title = 'Crypto Pairing'
 
+# Default conversion from ETH to BTC
 default_inputs = ('ETH', 'BTC')
-df = quandl.get("GDAX/ETH_BTC", authtoken="ZHJDdS31ZueeYzkeFDsb")
+
+# Declare constant variables
 convert_from = ['BTC', 'ETH', 'LTC']
 convert_to = ['EUR', 'USD', 'GBP', 'CAD', 'BTC']
-#currencies = {'BTC': 'Bitcoin', 'ETH': 'Ethereum', 'LTC': 'Litecoin', 'EUR': 'Euros', 'USD': 'USD', 'GBP': 'British pound', 'CAD': 'Canadian'}
 allowed_pairs = {('ETH', 'USD'): 'ETH_USD', ('ETH', 'EUR'): 'ETH_EUR', ('ETH', 'BTC'): 'ETH_BTC',
 					('BTC', 'USD'): 'USD', ('BTC', 'EUR'): 'EUR', ('BTC', 'GBP'): 'GBP', ('BTC', 'CAD'): 'CAD',
 					('LTC', 'EUR'): 'LTC_EUR', ('LTC', 'BTC'): 'LTC_BTC', ('LTC', 'USD'): 'LTC_USD'}
 
+# Setup Layout of app
 app.layout = html.Div([
 	html.Div([
 		dcc.Dropdown(
@@ -42,24 +44,27 @@ app.layout = html.Div([
 	dcc.Graph(id='main-plot')
 ])
 
-# Update Title
+# Update Title when dropdown options are selected
 @app.callback(
 	Output(component_id='title', component_property='children'),
 	[Input(component_id='cur-1', component_property='value'),
 	 Input(component_id='cur-2', component_property='value')])
-# Callback function should never mutate variables outside their scope
+# Function that updates the title based on selected conversion
 def update_title(cur_1, cur_2):
+	# Determine if both currencies are valid
 	if (cur_1, cur_2) not in allowed_pairs and (cur_2, cur_1) not in allowed_pairs:
 		cur_1, cur_2 = default_inputs[0], default_inputs[1]
 
 	return cur_1 + ' to ' + cur_2
 
+# Update main graph when dropdown options are selected
 @app.callback(
 	Output(component_id='main-plot', component_property='figure'),
 	[Input(component_id='cur-1', component_property='value'),
 	 Input(component_id='cur-2', component_property='value')])
-# Callback function should never mutate variables outside their scope
+# Function that updates the graph based on selected conversions
 def update_graph(cur_1, cur_2):
+	# Determine code for api call
 	code = ""
 	if (cur_1, cur_2) in allowed_pairs:
 		code = allowed_pairs[(cur_1, cur_2)]
@@ -69,11 +74,13 @@ def update_graph(cur_1, cur_2):
 		code = allowed_pairs[default_inputs]
 
 	print("GDAX/" + code)
+
+	# Determine y-axis label name
 	ylabel = "Dollars in " + cur_2
 	if cur_2 == 'BTC':
 		ylabel = "Ratio"
 
-	df_temp = quandl.get("GDAX/" + code, authtoken="ZHJDdS31ZueeYzkeFDsb")
+	df_temp = quandl.get("GDAX/" + code, authtoken=process.env.API_TOKEN)
 	return {
 		'data': [go.Scatter(
 			x=df_temp.index,
