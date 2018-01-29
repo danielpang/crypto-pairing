@@ -8,6 +8,7 @@ import pandas as pd
 import quandl
 
 app = dash.Dash()
+server = app.server
 app.title = 'Crypto Pairing'
 
 # Default conversion from ETH to BTC
