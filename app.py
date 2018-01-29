@@ -42,8 +42,22 @@ app.layout = html.Div([
 	html.H1(id='title',
 		children=default_inputs[0] + ' to ' + default_inputs[1],
 		style={'textAlign': 'center', 'margin-bottom': '0'}),
-	html.Div(id='main-plot')
+	html.Div(id='main-plot'),
+	html.P(id='message', children='', style={'textAlign': 'center'})
 ], className="container")
+
+@app.callback(
+	Output(component_id='message', component_property='children'),
+	[Input(component_id='cur-1', component_property='value'),
+	 Input(component_id='cur-2', component_property='value')])
+# Function that alerts the user based on their selected conversion
+def message(cur_1, cur_2):
+	message = ""
+	# Determine if both currencies are valid
+	if (cur_1, cur_2) not in allowed_pairs and (cur_2, cur_1) not in allowed_pairs:
+		message = cur_1 + ' to ' + cur_2 + ' not possible. Showing default conversion instead.'
+
+	return message
 
 # Update Title when dropdown options are selected
 @app.callback(
@@ -81,6 +95,7 @@ def update_graph(cur_1, cur_2):
 	if cur_2 == 'BTC':
 		ylabel = "Ratio"
 
+	# Grab data from Quandl according to the code
 	df_temp = quandl.get("GDAX/" + code, authtoken=os.environ['API_TOKEN'])
 	return dcc.Graph(
 		id='graph',
