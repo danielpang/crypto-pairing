@@ -31,3 +31,7 @@ html {
     padding-right: 60px;
   }
 }
+
+._dash-undo-redo {
+  display: none;
+}

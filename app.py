@@ -99,6 +99,7 @@ def update_graph(cur_1, cur_2):
 	df_temp = quandl.get("GDAX/" + code, authtoken=os.environ['API_TOKEN'])
 	return dcc.Graph(
 		id='graph',
+		config={'displayModeBar': False},
 		figure={
 		'data': [go.Scatter(
 			x=df_temp.index,
