@@ -43,7 +43,7 @@ app.layout = html.Div([
 		children=default_inputs[0] + ' to ' + default_inputs[1],
 		style={'textAlign': 'center', 'margin-bottom': '0'}),
 	dcc.Graph(id='main-plot')
-])
+], className="container")
 
 # Update Title when dropdown options are selected
 @app.callback(
