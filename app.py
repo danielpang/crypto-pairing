@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
-
+import os
 import pandas as pd
 import quandl
 
@@ -81,7 +81,7 @@ def update_graph(cur_1, cur_2):
 	if cur_2 == 'BTC':
 		ylabel = "Ratio"
 
-	df_temp = quandl.get("GDAX/" + code, authtoken=process.env.API_TOKEN)
+	df_temp = quandl.get("GDAX/" + code, authtoken=os.environ['API_TOKEN'])
 	return {
 		'data': [go.Scatter(
 			x=df_temp.index,
