@@ -42,7 +42,7 @@ app.layout = html.Div([
 	html.H1(id='title',
 		children=default_inputs[0] + ' to ' + default_inputs[1],
 		style={'textAlign': 'center', 'margin-bottom': '0'}),
-	dcc.Graph(id='main-plot')
+	html.Div(id='main-plot')
 ], className="container")
 
 # Update Title when dropdown options are selected
@@ -60,7 +60,7 @@ def update_title(cur_1, cur_2):
 
 # Update main graph when dropdown options are selected
 @app.callback(
-	Output(component_id='main-plot', component_property='figure'),
+	Output(component_id='main-plot', component_property='children'),
 	[Input(component_id='cur-1', component_property='value'),
 	 Input(component_id='cur-2', component_property='value')])
 # Function that updates the graph based on selected conversions
@@ -82,7 +82,9 @@ def update_graph(cur_1, cur_2):
 		ylabel = "Ratio"
 
 	df_temp = quandl.get("GDAX/" + code, authtoken=os.environ['API_TOKEN'])
-	return {
+	return dcc.Graph(
+		id='graph',
+		figure={
 		'data': [go.Scatter(
 			x=df_temp.index,
 			y=df_temp['Open'],
@@ -96,10 +98,10 @@ def update_graph(cur_1, cur_2):
 				'title': ylabel,
 			},
 		)
-	}
+	})
 
 external_css = ["https://codepen.io/chriddyp/pen/bWLwgP.css",
-	"https://cdn.rawgit.com/plotly/dash-app-stylesheets/2cc54b8c03f4126569a3440aae611bbef1d7a5dd/stylesheet.css"]
+	"https://s3.amazonaws.com/static-files-dpang/stylesheet.css"]
 
 for css in external_css:
 	app.css.append_css({"external_url": css})
